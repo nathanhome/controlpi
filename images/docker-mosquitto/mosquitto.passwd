@@ -1,1 +1,0 @@
-someuser: <add some user with credentials using mosquitto_passwd, see ../README-docker.MD>
