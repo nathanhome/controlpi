@@ -117,7 +117,7 @@ function install_docker {
     echo -n 'deb [arch=armhf] https://download.docker.com/linux/\$ID \$VERSION_CODENAME stable' |\
         tee /etc/apt/sources.list.d/docker.list
     apt-get update
-    apt-get install -y --no-install-recommends docker-ce
+    apt-get install -y --no-install-recommends docker-ce git
     apt-get -y update && apt-get -y upgrade
     usermod -a -G docker $pi_new_user
     "
