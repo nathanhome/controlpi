@@ -2,6 +2,7 @@
 .DS_Store
 wpa_supplicant.conf
 authorized_keys
+images/docker-mosquitto/mosquitto.passwd
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
