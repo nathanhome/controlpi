@@ -1,3 +1,8 @@
+# own (Mac OS X files, secured files, ...)
+.DS_Store
+wpa_supplicant.conf
+authorized_keys
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
