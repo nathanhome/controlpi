@@ -30,7 +30,7 @@ games,users,input,netdev,gpio,i2c,spi $pi_new_user &&
         mkdir -p ~$pi_new_user/.ssh &&
         chown $pi_new_user:$pi_new_user ~$pi_new_user/.ssh &&
         chmod 700 ~$pi_new_user/.ssh &&
-        echo '$pi_authorized_keys' | tee ~$pi_new_user/.ssh/authorized_keys &&
+        echo '$pi_authorized_keys' | tee ~$pi_new_user/.ssh/authorized_keys >/dev/null &&
         chown $pi_new_user:$pi_new_user ~$pi_new_user/.ssh/authorized_keys &&
         chmod 600 ~$pi_new_user/.ssh/authorized_keys
     else
@@ -45,7 +45,7 @@ function setup_sshd_sudoers {
     set -x
     echo '+++ Adapt sshd settings +++'
     set +x
-    echo '$pi_sshd_config' | tee /etc/ssh/sshd_config
+    echo '$pi_sshd_config' | tee /etc/ssh/sshd_config >/dev/null
     sed -i -E 's/%sudo.*/%sudo ALL=(ALL:ALL) NOPASSWD: ALL/' /etc/sudoers
     systemctl restart sshd
     "
@@ -115,7 +115,7 @@ function install_docker {
     curl -fsSL 'https://download.docker.com/linux/raspbian/gpg' | sudo apt-key add -
     apt-key finger 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
     echo -n 'deb [arch=armhf] https://download.docker.com/linux/\$ID \$VERSION_CODENAME stable' |\
-        tee /etc/apt/sources.list.d/docker.list
+        tee /etc/apt/sources.list.d/docker.list > /dev/null
     apt-get update
     apt-get install -y --no-install-recommends docker-ce git
     apt-get -y update && apt-get -y upgrade
