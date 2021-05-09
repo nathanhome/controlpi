@@ -1,0 +1,23 @@
+[Unit]
+Description=NATHAN home automation services
+Requires=docker.service
+After=docker.service
+
+[Service]
+Environment="NATHAN_BUILD_VERSION=0.1.16"
+Restart=on-failure
+TimeoutStartSec=1200
+
+WorkingDirectory=/home/%i/controlpi/images
+
+# Remove old containers, images and volumes and update it
+#ExecStartPre=/usr/local/bin/docker-compose down -v
+#ExecStartPre=/usr/local/bin/docker-compose rm -fv
+#ExecStartPre=/usr/local/bin/docker-compose pull
+
+# regular start/stop commands
+ExecStart=/usr/local/bin/docker-compose up
+ExecStop=/usr/local/bin/docker-compose down -v
+
+[Install]
+WantedBy=multi-user.target

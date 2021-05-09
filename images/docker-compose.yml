@@ -1,0 +1,95 @@
+version: "3.7"
+
+###
+# Build with
+# NATHAN_BUILD_VERSION="0.1.1" docker-compose build --force-rm --pull
+networks:
+    home-net:
+        name: home-net
+        driver: bridge
+
+
+services:
+    assistant.home:
+        restart: always
+        image: "nathanhome/assistant:${NATHAN_BUILD_VERSION}"
+        build:
+            context: ./docker-hass-io
+            args:
+                build_version: "${NATHAN_BUILD_VERSION}"
+        ports:
+            - 443:4143
+        environment:
+            TZ: "Europe/Berlin"
+        volumes:
+            - "/home/homedock/.nathan/config/homeassistant:/config"
+            - "/etc/localtime:/etc/localtime:ro"
+        networks:
+            - home-net
+        secrets:
+            - HA_SECRETS
+            - HA_TLS_KEY
+            
+
+    mqtts.home:
+        restart: "no"
+        # restart: "always"
+        image: "nathanhome/mosquitto:${NATHAN_BUILD_VERSION}"
+        tty: true
+        build:
+            context: ./docker-mosquitto
+            args:
+                build_version: "${NATHAN_BUILD_VERSION}"
+        environment:
+            - TZ=Europe/Berlin
+        ports:
+            - "8883:8883"
+        volumes:
+            - /home/homedock/.nathan/data/mosquitto:/mosquitto/data
+            - /home/homedock/.nathan/logs:/mosquitto/log
+        networks:
+            - home-net
+        secrets:
+            - MQTTS_PASSWD_FILE
+            - MQTTS_ACL_FILE
+            - MQTTS_KEY
+            - MQTTS_CERT_CHAIN
+    
+
+    zwave.home:
+        restart: always
+        #image: "robertslando/zwave2mqtt:latest"
+        image: "nathanhome/openzwave:${NATHAN_BUILD_VERSION}"
+        stop_signal: SIGINT
+        tty: false
+        build:
+            context: ./docker-openzwave
+            args:
+                build_version: "${NATHAN_BUILD_VERSION}"
+        environment:
+            - TZ=Europe/Berlin
+        ports:
+            - "8091:8091"
+        devices:
+            - "/dev/ttyACM0:/dev/ttyACM0"
+        volumes:
+            - /home/homedock/.nathan/config/zwave:/usr/src/app/store
+        networks:
+            - home-net
+
+            
+# TODO: Password still in clear text on docker host
+secrets:
+    HA_SECRETS:
+        file: /home/homedock/.nathan/.sec/homeassistant/secrets.yaml
+    HA_TLS_KEY:
+        file: /home/homedock/.nathan/.sec/homeassistant/nathan-pi-home.rederlechner.home.key
+    MQTTS_PASSWD_FILE:
+        file: /home/homedock/.nathan/.sec/mosquitto/mosquitto.passwd
+    MQTTS_ACL_FILE:
+        file: /home/homedock/.nathan/.sec/mosquitto/mosquitto.acl
+    MQTTS_KEY:
+        file: /home/homedock/.nathan/.sec/mosquitto/nathan-mqtts.rederlechner.home.key
+    MQTTS_CERT_CHAIN:
+        file: /home/homedock/.nathan/.sec/mosquitto/nathan-mqtts.rederlechner.home-chain.pem
+        

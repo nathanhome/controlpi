@@ -10,6 +10,7 @@ diskname=$2   # just the name, not the raw name, without /dev
 
 sudo diskutil unmountDisk /dev/$2
 sudo dd if=$imagepath of=/dev/r$2 bs=1m conv=sync
+sleep 1
 # I prefer a fixed line connection to my internet endpoint
 # and wireless only for devices connected to it
 #cp wpa_supplicant.conf /Volumes/boot
